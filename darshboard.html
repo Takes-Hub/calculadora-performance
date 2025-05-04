@@ -1,0 +1,313 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Calculadora de Métricas de Marketing</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+    .metric-section { display: none; }
+    button.bg-primary { background-color: #41a59e !important; color: #fff !important; }
+    select, input { color: #000; }
+    .metric-desc { font-size: 0.9rem; color: #555; margin-bottom: 1rem; }
+    .result-compare { margin-top: 0.5rem; font-size: 0.9rem; }
+  </style>
+</head>
+<body class="bg-gray-100 min-h-screen p-6">
+
+  <h1 class="text-2xl font-bold mb-6 text-center">Calculadora de Métricas de Marketing</h1>
+
+  <div class="flex gap-4 mb-6 items-end">
+    <div>
+      <label class="block mb-1">Categoria</label>
+      <select id="menu-cat" class="border rounded p-2 w-full">
+        <option value="">Selecione…</option>
+        <option value="alcance">Alcance</option>
+        <option value="conversao">Conversão</option>
+        <option value="retencao">Retenção</option>
+      </select>
+    </div>
+    <div>
+      <label class="block mb-1">Métrica</label>
+      <select id="menu-met" class="border rounded p-2 w-full" disabled>
+        <option value="">Selecione…</option>
+      </select>
+    </div>
+    <div class="ml-auto space-x-2">
+      <button id="export-csv" class="bg-primary px-4 py-2 rounded">Exportar CSV</button>
+      <button id="export-pdf" class="bg-primary px-4 py-2 rounded">Exportar PDF</button>
+    </div>
+  </div>
+
+  <!-- Metric Sections -->
+  <!-- Alcance -->
+  <div id="cpm" class="metric-section bg-white p-6 rounded shadow mb-6">
+    <h2 class="text-xl font-semibold mb-2">CPM (Custo por 1.000 impressões)</h2>
+    <p class="metric-desc">[=(Gasto Total / Impressões) × 1000]</p>
+    <label class="block mb-2">Gasto (R$): <input id="cpm-cost" type="text" class="border p-2 w-full"/></label>
+    <label class="block mb-4">Impressões: <input id="cpm-impr" type="text" class="border p-2 w-full"/></label>
+    <button id="calc-cpm" class="bg-primary px-4 py-2 rounded">Calcular CPM</button>
+    <p id="cpm-res" class="mt-2 text-lg"></p>
+    <div id="cpm-compare" class="result-compare"></div>
+  </div>
+
+  <div id="ctr" class="metric-section bg-white p-6 rounded shadow mb-6">
+    <h2 class="text-xl font-semibold mb-2">CTR (Taxa de Clique)</h2>
+    <p class="metric-desc">[=(Cliques / Impressões) × 100]</p>
+    <label class="block mb-2">Cliques: <input id="ctr-cl" type="text" class="border p-2 w-full"/></label>
+    <label class="block mb-4">Impressões: <input id="ctr-impr" type="text" class="border p-2 w-full"/></label>
+    <button id="calc-ctr" class="bg-primary px-4 py-2 rounded">Calcular CTR</button>
+    <p id="ctr-res" class="mt-2 text-lg"></p>
+    <div id="ctr-compare" class="result-compare"></div>
+  </div>
+
+  <div id="cpc" class="metric-section bg-white p-6 rounded shadow mb-6">
+    <h2 class="text-xl font-semibold mb-2">CPC (Custo por Clique)</h2>
+    <p class="metric-desc">[=Gasto Total / Cliques]</p>
+    <label class="block mb-2">Gasto (R$): <input id="cpc-cost" type="text" class="border p-2 w-full"/></label>
+    <label class="block mb-4">Cliques: <input id="cpc-cl" type="text" class="border p-2 w-full"/></label>
+    <button id="calc-cpc" class="bg-primary px-4 py-2 rounded">Calcular CPC</button>
+    <p id="cpc-res" class="mt-2 text-lg"></p>
+    <div id="cpc-compare" class="result-compare"></div>
+  </div>
+
+  <div id="freq" class="metric-section bg-white p-6 rounded shadow mb-6">
+    <h2 class="text-xl font-semibold mb-2">Frequência</h2>
+    <p class="metric-desc">[=Impressões / Alcance]</p>
+    <label class="block mb-2">Impressões: <input id="freq-imp" type="text" class="border p-2 w-full"/></label>
+    <label class="block mb-4">Alcance: <input id="freq-reach" type="text" class="border p-2 w-full"/></label>
+    <button id="calc-freq" class="bg-primary px-4 py-2 rounded">Calcular Frequência</button>
+    <p id="freq-res" class="mt-2 text-lg"></p>
+    <div id="freq-compare" class="result-compare"></div>
+  </div>
+
+  <!-- Conversão -->
+  <div id="cpl" class="metric-section bg-white p-6 rounded shadow mb-6">
+    <h2 class="text-xl font-semibold mb-2">CPL (Custo por Lead)</h2>
+    <p class="metric-desc">[=Gasto Total / Nº de Leads]</p>
+    <label class="block mb-2">Gasto (R$): <input id="cpl-cost" type="text" class="border p-2 w-full"/></label>
+    <label class="block mb-4">Leads: <input id="cpl-leads" type="text" class="border p-2 w-full"/></label>
+    <button id="calc-cpl" class="bg-primary px-4 py-2 rounded">Calcular CPL</button>
+    <p id="cpl-res" class="mt-2 text-lg"></p>
+    <div id="cpl-compare" class="result-compare"></div>
+  </div>
+
+  <div id="conv1" class="metric-section bg-white p-6 rounded shadow mb-6">
+    <h2 class="text-xl font-semibold mb-2">Conv. Visitante→Lead</h2>
+    <p class="metric-desc">[=(Leads Gerados / Cliques) × 100]</p>
+    <label class="block mb-2">Leads: <input id="vsl-leads" type="text" class="border p-2 w-full"/></label>
+    <label class="block mb-4">Cliques: <input id="vsl-cl" type="text" class="border p-2 w-full"/></label>
+    <button id="calc-vsl" class="bg-primary px-4 py-2 rounded">Calcular</button>
+    <p id="conv1-res" class="mt-2 text-lg"></p>
+    <div id="conv1-compare" class="result-compare"></div>
+  </div>
+
+  <div id="conv2" class="metric-section bg-white p-6 rounded shadow mb-6">
+    <h2 class="text-xl font-semibold mb-2">Conv. Lead→Cliente</h2>
+    <p class="metric-desc">[(Conversões / Leads Gerados) × 100]</p>
+    <label class="block mb-2">Conversões: <input id="lsc-clients" type="text" class="border p-2 w-full"/></label>
+    <label class="block mb-4">Leads: <input id="lsc-leads" type="text" class="border p-2 w-full"/></label>
+    <button id="calc-lsc" class="bg-primary px-4 py-2 rounded">Calcular</button>
+    <p id="conv2-res" class="mt-2 text-lg"></p>
+    <div id="conv2-compare" class="result-compare"></div>
+  </div>
+
+  <div id="cpa" class="metric-section bg-white p-6 rounded shadow mb-6">
+    <h2 class="text-xl font-semibold mb-2">CPA (Custo por Aquisição)</h2>
+    <p class="metric-desc">[=Custo Total da Campanha / Vendas]</p>
+    <label class="block mb-2">Custo (R$): <input id="cpa-cost" type="text" class="border p-2 w-full"/></label>
+    <label class="block mb-4">Vendas: <input id="cpa-sales" type="text" class="border p-2 w-full"/></label>
+    <button id="calc-cpa" class="bg-primary px-4 py-2 rounded">Calcular CPA</button>
+    <p id="cpa-res" class="mt-2 text-lg"></p>
+    <div id="cpa-compare" class="result-compare"></div>
+  </div>
+
+  <div id="roas" class="metric-section bg-white p-6 rounded shadow mb-6">
+    <h2 class="text-xl font-semibold mb-2">ROAS</h2>
+    <p class="metric-desc">[=(Receita Gerada / Gasto Total) × 100]</p>
+    <label class="block mb-2">Receita (R$): <input id="roas-rev" type="text" class="border p-2 w-full"/></label>
+    <label class="block mb-4">Gasto (R$): <input id="roas-cost" type="text" class="border p-2 w-full"/></label>
+    <button id="calc-roas" class="bg-primary px-4 py-2 rounded">Calcular ROAS</button>
+    <p id="roas-res" class="mt-2 text-lg"></p>
+    <div id="roas-compare" class="result-compare"></div>
+  </div>
+
+  <div id="roi" class="metric-section bg-white p-6 rounded shadow mb-6">
+    <h2 class="text-xl font-semibold mb-2">ROI (Retorno sobre Investimento)</h2>
+    <p class="metric-desc">[=((Receita Total − Gasto Total) / Gasto Total) × 100]</p>
+    <label class="block mb-2">Receita (R$): <input id="roi-rev" type="text" class="border p-2 w-full"/></label>
+    <label class="block mb-4">Gasto (R$): <input id="roi-cost" type="text" class="border p-2 w-full"/></label>
+    <button id="calc-roi" class="bg-primary px-4 py-2 rounded">Calcular ROI</button>
+    <p id="roi-res" class="mt-2 text-lg"></p>
+    <div id="roi-compare" class="result-compare"></div>
+  </div>
+
+  <div id="ticket" class="metric-section bg-white p-6 rounded shadow mb-6">
+    <h2 class="text-xl font-semibold mb-2">Ticket Médio</h2>
+    <p class="metric-desc">[=Receita Total / Nº de Vendas]</p>
+    <label class="block mb-2">Receita (R$): <input id="ticket-rev" type="text" class="border p-2 w-full"/></label>
+    <label class="block mb-4">Vendas: <input id="ticket-sales" type="text" class="border p-2 w-full"/></label>
+    <button id="calc-ticket" class="bg-primary px-4 py-2 rounded">Calcular Ticket</button>
+    <p id="ticket-res" class="mt-2 text-lg"></p>
+    <div id="ticket-compare" class="result-compare"></div>
+  </div>
+
+  <div id="margem" class="metric-section bg-white p-6 rounded shadow mb-6">
+    <h2 class="text-xl font-semibold mb-2">Margem de Lucro</h2>
+    <p class="metric-desc">[=(Receita Total − Custos) / Receita Total × 100]</p>
+    <label class="block mb-2">Receita (R$): <input id="margem-rev" type="text" class="border p-2 w-full"/></label>
+    <label class="block mb-4">Custos (R$): <input id="margem-cost" type="text" class="border p-2 w-full"/></label>
+    <button id="calc-margem" class="bg-primary px-4 py-2 rounded">Calcular Margem</button>
+    <p id="margem-res" class="mt-2 text-lg"></p>
+    <div id="margem-compare" class="result-compare"></div>
+  </div>
+
+  <!-- Retenção -->
+  <div id="engagement" class="metric-section bg-white p-6 rounded shadow mb-6">
+    <h2 class="text-xl font-semibold mb-2">Engajamento</h2>
+    <p class="metric-desc">[=(Curtidas + Comentários + Shares) / Alcance × 100]</p>
+    <label class="block mb-2">Curtidas: <input id="eng-likes" type="text" class="border p-2 w-full"/></label>
+    <label class="block mb-2">Comentários: <input id="eng-comments" type="text" class="border p-2 w-full"/></label>
+    <label class="block mb-2">Shares: <input id="eng-shares" type="text" class="border p-2 w-full"/></label>
+    <label class="block mb-4">Alcance: <input id="eng-reach" type="text" class="border p-2 w-full"/></label>
+    <button id="calc-eng" class="bg-primary px-4 py-2 rounded">Calcular Engajamento</button>
+    <p id="engagement-res" class="mt-2 text-lg"></p>
+    <div id="engagement-compare" class="result-compare"></div>
+  </div>
+
+  <div id="ltv" class="metric-section bg-white p-6 rounded shadow mb-6">
+    <h2 class="text-xl font-semibold mb-2">LTV (Valor do Cliente no Tempo)</h2>
+    <p class="metric-desc">[=Ticket Médio × Nº de Compras por Ano × Tempo de Retenção]</p>
+    <label class="block mb-2">Ticket Médio (R$): <input id="ltv-ticket" type="text" class="border p-2 w-full"/></label>
+    <label class="block mb-2">Compras/ano: <input id="ltv-pur" type="text" class="border p-2 w-full"/></label>
+    <label class="block mb-4">Retenção (anos): <input id="ltv-ret" type="text" class="border p-2 w-full"/></label>
+    <button id="calc-ltv" class="bg-primary px-4 py-2 rounded">Calcular LTV</button>
+    <p id="ltv-res" class="mt-2 text-lg"></p>
+    <div id="ltv-compare" class="result-compare"></div>
+  </div>
+
+  <div id="payback" class="metric-section bg-white p-6 rounded shadow mb-6">
+    <h2 class="text-xl font-semibold mb-2">CAC Payback</h2>
+    <p class="metric-desc">[=CAC / (Receita Média por Cliente por Mês)]</p>
+    <label class="block mb-2">CAC (R$): <input id="pay-cac" type="text" class="border p-2 w-full"/></label>
+    <label class="block mb-4">Receita/mês (R$): <input id="pay-rec" type="text" class="border p-2 w-full"/></label>
+    <button id="calc-pay" class="bg-primary px-4 py-2 rounded">Calcular Payback</button>
+    <p id="payback-res" class="mt-2 text-lg"></p>
+    <div id="payback-compare" class="result-compare"></div>
+  </div>
+
+  <div id="churn" class="metric-section bg-white p-6 rounded shadow mb-6">
+    <h2 class="text-xl font-semibold mb-2">Taxa de Churn</h2>
+    <p class="metric-desc">[=(Clientes Perdidos / Total Inicial) × 100]</p>
+    <label class="block mb-2">Perdidos: <input id="churn-lost" type="text" class="border p-2 w-full"/></label>
+    <label class="block mb-4">Total Inicial: <input id="churn-tot" type="text" class="border</label>
+    <button id="calc-churn" class="bg-primary px-4 py-2 rounded">Calcular Churn</button>
+    <p id="churn-res" class="mt-2 text-lg"></p>
+    <div id="churn-compare" class="result-compare"></div>
+  </div>
+
+  <div id="csat" class="metric-section bg-white p-6 rounded shadow mb-6">
+    <h2 class="text-xl font-semibold mb-2">CSAT (Satisfação do Cliente)</h2>
+    <p class="metric-desc">[=(Avaliações Positivas / Total de Avaliações) × 100]</p>
+    <label class="block mb-2">Positivas: <input id="csat-pos" type="text" class="border p-2 w/full"/></label>
+    <label class="block mb-4">Total: <input id="csat-tot" type="text" class="border p-2 w/full"/></label>
+    <button id="calc-csat" class="bg-primary px-4 py-2 rounded">Calcular CSAT</button>
+    <p id="csat-res" class="mt-2 text-lg"></p>
+    <div id="csat-compare" class="result-compare"></div>
+  </div>
+
+  <script>
+    function getNum(id) {
+      const raw = document.getElementById(id).value.trim();
+      const normalized = raw.replace(/,/g, '.');
+      const v = parseFloat(normalized);
+      return isNaN(v) ? 0 : v;
+    }
+    function fmtBRL(v){ return 'R$ '+v.toLocaleString('pt-BR',{minimumFractionDigits:2}); }
+    function fmtPct(v){ return v.toFixed(2)+'%'; }
+
+    const metricsByCat = {
+      alcance:   ["cpm","ctr","cpc","freq"],
+      conversao: ["cpl","conv1","conv2","cpa","roas","roi","ticket","margem"],
+      retencao:  ["engagement","ltv","payback","churn","csat"]
+    };
+    const referencia = {
+      cpm:    {avg:20, better:"lower", tip:"otimize público e criativos."},
+      ctr:    {avg:2.0, better:"higher", tip:"melhore call‑to‑action e relevância."},
+      cpc:    {avg:5.0, better:"lower", tip:"refine segmentação e teste criativos."},
+      cpl:    {avg:50, better:"lower", tip:"aperfeiçoe landing page."},
+      engagement:{avg:3, better:"higher", tip:"poste conteúdo mais envolvente."},
+      conv1:  {avg:10, better:"higher", tip:"otimize funil e oferta."},
+      conv2:  {avg:20, better:"higher", tip:"aprimorar follow‑up."},
+      cpa:    {avg:100, better:"lower", tip:"reduza custo por aquisição."},
+      roas:   {avg:400, better:"higher", tip:"realoque verba para top anúncios."},
+      roi:    {avg:100, better:"higher", tip:"aumente receita ou reduza custo."},
+      ticket: {avg:200, better:"higher", tip:"incentive upsell."},
+      margem: {avg:30, better:"higher", tip:"reduza custos ou aumente preço."},
+      ltv:    {avg:1000, better:"higher", tip:"fidelize com assinatura."},
+      payback:{avg:3, better:"lower", tip:"aumente receita média mensal."},
+      churn:  {avg:5, better:"lower", tip:"melhore retenção."},
+      csat:   {avg:80, better:"higher", tip:"aperfeiçoe atendimento."},
+      freq:   {avg:1.5, better:"around", tip:"equilibre frequência de exposição."}
+    };
+
+    const catSel = document.getElementById("menu-cat"),
+          metSel = document.getElementById("menu-met");
+    catSel.onchange = () => {
+      const list = metricsByCat[catSel.value] || [];
+      metSel.innerHTML = `<option value="">Selecione…</option>` +
+        list.map(m=>`<option value="${m}">${m.toUpperCase()}</option>`).join("");
+      metSel.disabled = !list.length;
+      document.querySelectorAll(".metric-section").forEach(s=>s.style.display="none");
+    };
+    metSel.onchange = () => {
+      document.querySelectorAll(".metric-section").forEach(s=>s.style.display="none");
+      const m = metSel.value.toLowerCase();
+      const sec = document.getElementById(m);
+      if(sec) sec.style.display="block";
+    };
+
+    function compareAndTip(id,res,ref){
+      const el = document.getElementById(id+"-compare");
+      const isCurr = /cpm|cpc|cpl|cpa|ticket|ltv|payback/.test(id);
+      const avgTxt = isCurr ? fmtBRL(ref.avg) : fmtPct(ref.avg);
+      const ok = (ref.better==="lower"&&res<=ref.avg)
+              || (ref.better==="higher"&&res>=ref.avg)
+              || (ref.better==="around"&& res>=ref.avg*0.8 && res<=ref.avg*1.2);
+      el.textContent = ok
+        ? `Bom! Está dentro da média (${avgTxt}).`
+        : `Fora da média (${avgTxt}). Dica: ${ref.tip}`;
+    }
+
+    const binds = [
+      {btn:"calc-cpm",res:"cpm",fn:()=>{const c=getNum('cpm-cost'),i=getNum('cpm-impr'); return i?c/i*1000:NaN}},
+      {btn:"calc-ctr",res:"ctr",fn:()=>{const c=getNum('ctr-cl'),i=getNum('ctr-impr'); return i?c/i*100:NaN}},
+      {btn:"calc-cpc",res:"cpc",fn:()=>{const c=getNum('cpc-cost'),cl=getNum('cpc-cl'); return cl?c/cl:NaN}},
+      {btn:"calc-freq",res:"freq",fn:()=>{const I=getNum('freq-imp'),R=getNum('freq-reach'); return R?I/R:NaN}},
+      {btn:"calc-cpl",res:"cpl",fn:()=>{const c=getNum('cpl-cost'),L=getNum('cpl-leads'); return L?c/L:NaN}},
+      {btn:"calc-eng",res:"engagement",fn:()=>{const l=getNum('eng-likes'),c=getNum('eng-comments'),s=getNum('eng-shares'),r=getNum('eng-reach'); return r?(l+c+s)/r*100:NaN}},
+      {btn:"calc-vsl",res:"conv1",fn:()=>{const L=getNum('vsl-leads'),C=getNum('vsl-cl'); return C?L/C*100:NaN}},
+      {btn:"calc-lsc",res:"conv2",fn:()=>{const CL=getNum('lsc-clients'),L=getNum('lsc-leads'); return L?CL/L*100:NaN}},
+      {btn:"calc-cpa",res:"cpa",fn:()=>{const c=getNum('cpa-cost'),v=getNum('cpa-sales'); return v?c/v:NaN}},
+      {btn:"calc-roas",res:"roas",fn:()=>{const R=getNum('roas-rev'),G=getNum('roas-cost'); return G?R/G*100:NaN}},
+      {btn:"calc-roi",res:"roi",fn:()=>{const R=getNum('roi-rev'),G=getNum('roi-cost'); return G?(R-G)/G*100:NaN}},
+      {btn:"calc-ticket",res:"ticket",fn:()=>{const R=getNum('ticket-rev'),S=getNum('ticket-sales'); return S?R/S:NaN}},
+      {btn:"calc-margem",res:"margem",fn:()=>{const R=getNum('margem-rev'),C=getNum('margem-cost'); return R?(R-C)/R*100:NaN}},
+      {btn:"calc-ltv",res:"ltv",fn:()=>{const t=getNum('ltv-ticket'),p=getNum('ltv-pur'),rt=getNum('ltv-ret'); return t&&p&&rt?t*p*rt:NaN}},
+      {btn:"calc-pay",res:"payback",fn:()=>{const C=getNum('pay-cac'),R=getNum('pay-rec'); return R?C/R:NaN}},
+      {btn:"calc-churn",res:"churn",fn:()=>{const l=getNum('churn-lost'),t=getNum('churn-tot'); return t?l/t*100:NaN}},
+      {btn:"calc-csat",res:"csat",fn:()=>{const P=getNum('csat-pos'),T=getNum('csat-tot'); return T?P/T*100:NaN}}
+    ];
+    binds.forEach(b=>{
+      document.getElementById(b.btn).onclick = ()=>{
+        const res = b.fn();
+        const out = isNaN(res)? 'N/A'
+                  : (/cpm|cpc|cpl|cpa|ticket|ltv|payback/.test(b.res) ? fmtBRL(res) : fmtPct(res));
+        document.getElementById(b.res+"-res").textContent = out;
+        if(!isNaN(res)) compareAndTip(b.res,res,referencia[b.res]);
+      };
+    });
+  </script>
+
+</body>
+</html>
